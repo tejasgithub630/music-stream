@@ -1,0 +1,32 @@
+{% extends 'music/base.html' %}
+
+{% block title %}Create Playlist{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h2 style="margin-bottom: 24px;">Create New Playlist</h2>
+    
+    <form method="post" enctype="multipart/form-data" style="max-width: 500px;">
+        {% csrf_token %}
+        <div style="margin-bottom: 16px;">
+            <label for="name" style="display: block; margin-bottom: 8px; color: #fff;">Playlist Name</label>
+            <input type="text" id="name" name="name" required style="width: 100%; padding: 12px; border-radius: 6px; border: none; background: #16213e; color: #fff;">
+        </div>
+        
+        <div style="margin-bottom: 16px;">
+            <label for="description" style="display: block; margin-bottom: 8px; color: #fff;">Description</label>
+            <textarea id="description" name="description" rows="4" style="width: 100%; padding: 12px; border-radius: 6px; border: none; background: #16213e; color: #fff;"></textarea>
+        </div>
+        
+        <div style="margin-bottom: 24px;">
+            <label for="cover_image" style="display: block; margin-bottom: 8px; color: #fff;">Cover Image</label>
+            <input type="file" id="cover_image" name="cover_image" accept="image/*" style="width: 100%; padding: 12px; border-radius: 6px; border: none; background: #16213e; color: #fff;">
+        </div>
+        
+        <div style="display: flex; gap: 16px;">
+            <button type="submit" class="btn" style="background: #4a90e2;">Create Playlist</button>
+            <a href="{% url 'playlist_list' %}" class="btn" style="background: #16213e;">Cancel</a>
+        </div>
+    </form>
+</div>
+{% endblock %} 

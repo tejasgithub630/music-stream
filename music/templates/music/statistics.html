@@ -1,0 +1,38 @@
+{% extends 'music/base.html' %}
+{% block title %}Music Streaming Statistics{% endblock %}
+{% block content %}
+<div class="card" style="max-width: 1200px; margin: 0 auto; background: #0c71a8; border-radius: 8px; padding: 24px;">
+    <h1 style="margin-bottom: 24px; color: #fff;">Music Streaming Statistics</h1>
+    <div class="dashboard-stats" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-bottom: 30px;">
+        <div class="stat-card" style="background: #b3e0ff; border-radius: 8px; padding: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.2); transition: transform 0.2s;">
+            <h3 style="color: #b3b3b3; margin: 0 0 10px 0; font-size: 16px; font-weight: 500;">Total Users</h3>
+            <div class="value" style="font-size: 24px; font-weight: 600; color: #4a90e2;">{{ total_users }}</div>
+        </div>
+        <div class="stat-card" style="background: #b3e0ff; border-radius: 8px; padding: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.2); transition: transform 0.2s;">
+            <h3 style="color: #b3b3b3; margin: 0 0 10px 0; font-size: 16px; font-weight: 500;">Total Listening Time</h3>
+            <div class="value" style="font-size: 24px; font-weight: 600; color: #4a90e2;">{{ total_listening_time }}</div>
+        </div>
+        <div class="stat-card" style="background: #b3e0ff; border-radius: 8px; padding: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.2); transition: transform 0.2s;">
+            <h3 style="color: #b3b3b3; margin: 0 0 10px 0; font-size: 16px; font-weight: 500;">Total Sessions</h3>
+            <div class="value" style="font-size: 24px; font-weight: 600; color: #4a90e2;">{{ total_sessions }}</div>
+        </div>
+    </div>
+    <div class="last-updated" style="text-align: center; color: #b3b3b3; margin-top: 20px; font-size: 0.9em;">
+        Last updated: {{ last_updated }}
+    </div>
+</div>
+
+<style>
+    .stat-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+    }
+</style>
+
+<script>
+    // Auto-refresh the page every 30 seconds
+    setTimeout(function() {
+        location.reload();
+    }, 30000);
+</script>
+{% endblock %} 

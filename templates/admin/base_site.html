@@ -1,0 +1,231 @@
+{% extends "admin/base.html" %}
+{% load static %}
+
+{% block title %}{{ title }} | {{ site_title|default:_('Music Admin') }}{% endblock %}
+
+{% block extrastyle %}
+<style>
+    :root {
+        --primary: #2c3e50;
+        --secondary: #34495e;
+        --accent: #3498db;
+        --primary-fg: #fff;
+        --body-fg: #333;
+        --body-bg: #f8f9fa;
+        --body-quiet-color: #666;
+        --body-loud-color: #000;
+        --header-color: #fff;
+        --header-branding-color: var(--accent);
+        --header-bg: var(--primary);
+        --header-link-color: var(--primary-fg);
+        --breadcrumbs-fg: #c4dce8;
+        --breadcrumbs-link-fg: var(--body-bg);
+        --breadcrumbs-bg: var(--primary);
+        --link-fg: #447e9b;
+        --link-hover-color: #036;
+        --link-selected-fg: #6f94c6;
+        --hairline-color: #e8e8e8;
+        --border-color: #ccc;
+        --error-fg: #ba2121;
+        --message-success-bg: #dfd;
+        --message-warning-bg: #ffc;
+        --message-error-bg: #ffefef;
+        --darkened-bg: #f8f8f8;
+        --selected-bg: #e4e4e4;
+        --selected-row: #ffc;
+        --button-fg: #fff;
+        --button-bg: var(--primary);
+        --button-hover-bg: #609ab6;
+        --default-button-bg: var(--secondary);
+        --default-button-hover-bg: #205067;
+        --close-button-bg: #888;
+        --close-button-hover-bg: #747474;
+        --delete-button-bg: #ba2121;
+        --delete-button-hover-bg: #a41515;
+        --object-tools-fg: var(--button-fg);
+        --object-tools-bg: var(--close-button-bg);
+        --object-tools-hover-bg: var(--close-button-hover-bg);
+    }
+
+    #header {
+        background: var(--header-bg);
+        color: var(--header-color);
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    #branding h1 {
+        font-weight: 600;
+        font-size: 24px;
+    }
+
+    #branding h1 a:link, #branding h1 a:visited {
+        color: var(--header-branding-color);
+    }
+
+    .module h2, .module caption {
+        background: var(--primary);
+        color: var(--header-color);
+        font-weight: 500;
+        padding: 12px;
+        border-radius: 4px 4px 0 0;
+    }
+
+    .module {
+        border-radius: 4px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        margin-bottom: 20px;
+        background: #fff;
+    }
+
+    .submit-row input {
+        background: var(--accent);
+        color: var(--button-fg);
+        border: none;
+        border-radius: 4px;
+        padding: 10px 15px;
+        font-weight: 500;
+        transition: background 0.2s;
+    }
+
+    .submit-row input:hover {
+        background: var(--button-hover-bg);
+    }
+
+    .button, input[type=submit], input[type=button], .submit-row input {
+        background: var(--accent);
+        color: var(--button-fg);
+        border-radius: 4px;
+        padding: 10px 15px;
+        font-weight: 500;
+        transition: all 0.2s;
+    }
+
+    .button:hover, input[type=submit]:hover, input[type=button]:hover {
+        background: var(--button-hover-bg);
+    }
+
+    #changelist-filter h2 {
+        background: var(--primary);
+        color: var(--header-color);
+        border-radius: 4px 4px 0 0;
+    }
+
+    #changelist-filter li.selected a {
+        color: var(--accent);
+        border-left: 3px solid var(--accent);
+    }
+
+    .paginator a:link, .paginator a:visited {
+        background: var(--accent);
+        color: var(--button-fg);
+        border-radius: 4px;
+        padding: 5px 10px;
+    }
+
+    .paginator a:hover {
+        background: var(--button-hover-bg);
+    }
+
+    #content {
+        padding: 30px 40px;
+    }
+
+    .dashboard .module table th {
+        width: 100%;
+        background: var(--primary);
+        color: var(--header-color);
+    }
+
+    .dashboard .module table td {
+        white-space: nowrap;
+    }
+
+    .dashboard .module table td a {
+        display: block;
+        padding: 8px;
+        color: var(--link-fg);
+        transition: color 0.2s;
+    }
+
+    .dashboard .module table td a:hover {
+        color: var(--link-hover-color);
+    }
+
+    /* Custom branding */
+    #branding h1 {
+        font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+        letter-spacing: 0.5px;
+    }
+
+    #branding h1 a:before {
+        content: "🎵";
+        margin-right: 10px;
+    }
+
+    /* Modern table styling */
+    #changelist table thead th {
+        background: var(--primary);
+        color: var(--header-color);
+        font-weight: 500;
+        padding: 12px 8px;
+    }
+
+    #changelist table tbody tr:hover {
+        background: var(--selected-bg);
+    }
+
+    /* Custom form styling */
+    .form-row {
+        padding: 12px;
+        border-bottom: 1px solid var(--hairline-color);
+    }
+
+    .form-row:last-child {
+        border-bottom: none;
+    }
+
+    .aligned label {
+        color: var(--body-quiet-color);
+        font-weight: 500;
+    }
+
+    /* Custom button styling */
+    .button.default {
+        background: var(--accent);
+        color: var(--button-fg);
+    }
+
+    .button.default:hover {
+        background: var(--button-hover-bg);
+    }
+
+    /* Custom sidebar styling */
+    #content-related {
+        background: #fff;
+        border-radius: 4px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+
+    #content-related h3 {
+        color: var(--primary);
+        font-weight: 500;
+        padding: 12px;
+        border-bottom: 1px solid var(--hairline-color);
+    }
+
+    #content-related .module {
+        box-shadow: none;
+        margin-bottom: 0;
+    }
+</style>
+{% endblock %}
+
+{% block branding %}
+<h1 id="site-name">
+    <a href="{% url 'admin:index' %}">
+        {{ site_header|default:_('Music Administration') }}
+    </a>
+</h1>
+{% endblock %}
+
+{% block nav-global %}{% endblock %} 

@@ -1,0 +1,209 @@
+{% extends 'music/base.html' %}
+
+{% block title %}Home - Discover Music{% endblock %}
+
+{% block content %}
+<!-- Search Bar -->
+<div class="card" style="margin-bottom: 24px; background: #b3e0ff;">
+    <input id="searchInput" type="text" placeholder="Search songs, artists, or albums..." style="width:100%; padding:14px 18px; border-radius:8px; border:none; background:#b3e0ff; color:#fff; font-size:1.1em; outline:none;">
+</div>
+
+<!-- My Listening Stats Section -->
+<div class="card" id="myStatsCard" style="display:none; margin-bottom: 24px; background: #b3e0ff;">
+    <h2 style="color: #111; margin-bottom: 18px;">My Listening Stats</h2>
+    <div id="myStatsContent" style="color: #111; font-size: 1.1em;">
+        <div style="margin-bottom: 8px;"><strong>User:</strong> <span id="stat-username" style="color: #4a90e2;"></span></div>
+        <div style="margin-bottom: 8px;"><strong>Total Listening Time:</strong> <span id="stat-listening-time" style="color: #1db954;"></span></div>
+        <div style="margin-bottom: 8px;"><strong>Total Sessions:</strong> <span id="stat-sessions" style="color: #4a90e2;"></span></div>
+        <div><strong>Last Active:</strong> <span id="stat-last-active" style="color: #4a90e2;"></span></div>
+    </div>
+</div>
+
+<!-- Hero/Banner Section -->
+<div class="card hero-banner" style="background: linear-gradient(90deg, #1db954 0%, #191414 100%); color: #fff; display: flex; align-items: center; min-height: 220px; margin-bottom: 36px;">
+    <div style="flex:1;">
+        <h1 style="font-size:2.5rem; margin-bottom: 10px;">Welcome to MusicApp</h1>
+        <p style="font-size:1.2rem; color: #e0e0e0;">Discover trending songs, popular artists, and music in your favorite language!</p>
+    </div>
+    <img src="https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=cover&w=300&q=80" alt="Music Banner" style="height:180px; border-radius:12px; margin-left:30px; box-shadow:0 4px 16px rgba(0,0,0,0.3);">
+</div>
+
+<!-- Featured Playlists/Albums Section -->
+<div class="card">
+    <h2 style="margin-bottom: 18px;">Featured Playlists & Albums</h2>
+    <div class="featured-row" style="display: flex; gap: 24px; overflow-x: auto;">
+        {% for playlist in featured_playlists %}
+        <div class="playlist-card" style="background: #b3e0ff; border-radius: 10px; min-width: 220px; max-width: 220px; padding: 16px; display: flex; flex-direction: column; align-items: center; box-shadow: 0 2px 8px rgba(0,0,0,0.2);">
+            <img src="{{ playlist.cover_image_url }}" alt="{{ playlist.name }}" style="width: 120px; height: 120px; border-radius: 8px; object-fit: cover; margin-bottom: 10px;">
+            <div style="font-weight:bold; color:#fff;">{{ playlist.name }}</div>
+            <div style="color:#b3b3b3; font-size:0.95em; text-align:center;">{{ playlist.description }}</div>
+            {% if playlist.songs %}
+            <div style="margin-top: 10px; width: 100%;">
+                <ul style="list-style: none; padding: 0; margin: 0;">
+                {% for song in playlist.songs %}
+                    <li style="color: #fff; font-size: 0.95em; margin-bottom: 4px; display: flex; align-items: center;">
+                        <span style="flex:1;">{{ song.title }}</span>
+                        <button class="btn play-song" style="margin-left: 8px; background: #4a90e2; color: #fff; padding: 4px 10px; font-size: 0.9em; border-radius: 6px;" data-song-id="{{ song.id }}" data-audio-url="{{ song.audio_file.url }}" data-title="{{ song.title }}" data-artist="{{ song.artist }}" data-cover="{% if song.cover_image %}{{ song.cover_image.url }}{% endif %}">Play</button>
+                    </li>
+                {% endfor %}
+                </ul>
+            </div>
+            {% endif %}
+        </div>
+        {% empty %}
+        <!-- Fallback to static content if no featured_playlists -->
+        <div class="playlist-card" style="background: #000; border-radius: 10px; min-width: 220px; max-width: 220px; padding: 16px; display: flex; flex-direction: column; align-items: center; box-shadow: 0 2px 8px rgba(0,0,0,0.2);">
+            <img src="https://images.unsplash.com/photo-1465101046530-73398c7f28ca?auto=format&fit=cover&w=200&q=80" alt="Chill Vibes" style="width: 120px; height: 120px; border-radius: 8px; object-fit: cover; margin-bottom: 10px;">
+            <div style="font-weight:bold; color:#fff;">Chill Vibes</div>
+            <div style="color:#b3b3b3; font-size:0.95em; text-align:center;">Relax and unwind with this mellow playlist.</div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- Popular Songs Section -->
+<div class="card" style="background: #b3e0ff;">
+    <h2 style="margin-bottom: 18px; color: #000;">Popular Songs</h2>
+    <div class="popular-songs-row" style="display: flex; gap: 24px; overflow-x: auto; padding-bottom: 16px;">
+        {% for song in popular_songs %}
+        <div class="song-card" style="background: #fff; color: #000; border-radius: 10px; min-width: 220px; max-width: 220px; padding: 16px; display: flex; flex-direction: column; align-items: center; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
+            {% if song.cover_image %}
+                <img src="{{ song.cover_image.url }}" alt="{{ song.title }}" style="width: 120px; height: 120px; border-radius: 8px; object-fit: cover; margin-bottom: 10px;">
+            {% else %}
+                <img src="https://via.placeholder.com/120x120?text=♪" alt="{{ song.title }}" style="width: 120px; height: 120px; border-radius: 8px; object-fit: cover; margin-bottom: 10px;">
+            {% endif %}
+            <div style="text-align:center;">
+                <div style="font-weight:bold; color:#000;">{{ song.title }}</div>
+                <div style="color:#4a90e2; font-size:0.95em;">{{ song.artist }}</div>
+                <div style="color:#1db954; font-size:0.9em; margin: 4px 0;">{{ song.get_language_display }}</div>
+                <div style="color:#4a90e2; font-size:0.85em;">Views: {{ song.views }}</div>
+            </div>
+            <button class="btn play-song" style="margin-top:10px; width:100%; background: #4a90e2; color: #fff;" data-song-id="{{ song.id }}" data-audio-url="{{ song.audio_file.url }}" data-title="{{ song.title }}" data-artist="{{ song.artist }}" data-cover="{% if song.cover_image %}{{ song.cover_image.url }}{% endif %}">Play</button>
+        </div>
+        {% empty %}
+        <p style="color: #b3b3b3;">No popular songs yet.</p>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- Popular Artists Section -->
+<div class="card" style="background: #b3e0ff;">
+    <h2 style="margin-bottom: 18px; color: #000;">Popular Artists</h2>
+    <div class="popular-artists-row" style="display: flex; gap: 24px; overflow-x: auto; padding-bottom: 16px;">
+        {% for artist in songs|dictsortreversed:"views"|slice:":8" %}
+        <div class="artist-card" style="background: #fff; color: #000; border-radius: 10px; min-width: 140px; max-width: 140px; padding: 16px; display: flex; flex-direction: column; align-items: center; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
+            <div style="width: 70px; height: 70px; background: #111111; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2.2em; color: #1db954; margin-bottom: 10px;">
+                {{ artist.artist|first|upper }}
+            </div>
+            <div style="color:#000; font-weight:bold; text-align:center;">{{ artist.artist }}</div>
+        </div>
+        {% empty %}
+        <p style="color: #4a90e2;">No artists found.</p>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- Songs by Language Section -->
+{% for language, songs in songs_by_language.items %}
+<div class="card" style="background: #b3e0ff;">
+    <h2 style="margin-bottom: 18px; color: #000;">Top {{ language }} Songs</h2>
+    <div class="popular-songs-row" style="display: flex; gap: 24px; overflow-x: auto; padding-bottom: 16px;">
+        {% for song in songs %}
+        <div class="song-card" style="background: #fff; color: #000; border-radius: 10px; min-width: 220px; max-width: 220px; padding: 16px; display: flex; flex-direction: column; align-items: center; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
+            {% if song.cover_image %}
+                <img src="{{ song.cover_image.url }}" alt="{{ song.title }}" style="width: 120px; height: 120px; border-radius: 8px; object-fit: cover; margin-bottom: 10px;">
+            {% else %}
+                <img src="https://via.placeholder.com/120x120?text=♪" alt="{{ song.title }}" style="width: 120px; height: 120px; border-radius: 8px; object-fit: cover; margin-bottom: 10px;">
+            {% endif %}
+            <div style="text-align:center;">
+                <div style="font-weight:bold; color:#000;">{{ song.title }}</div>
+                <div style="color:#4a90e2; font-size:0.95em;">{{ song.artist }}</div>
+                <div style="color:#1db954; font-size:0.9em; margin: 4px 0;">{{ song.get_language_display }}</div>
+                <div style="color:#4a90e2; font-size:0.85em;">Views: {{ song.views }}</div>
+            </div>
+            <button class="btn play-song" style="margin-top:10px; width:100%; background: #4a90e2; color: #fff;" data-song-id="{{ song.id }}" data-audio-url="{{ song.audio_file.url }}" data-title="{{ song.title }}" data-artist="{{ song.artist }}" data-cover="{% if song.cover_image %}{{ song.cover_image.url }}{% endif %}">Play</button>
+        </div>
+        {% empty %}
+        <p style="color: #4a90e2;">No {{ language }} songs available.</p>
+        {% endfor %}
+    </div>
+</div>
+{% endfor %}
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// --- Real-time Search Filtering ---
+const searchInput = document.getElementById('searchInput');
+searchInput.addEventListener('input', function() {
+    const query = this.value.toLowerCase();
+    // Song cards
+    document.querySelectorAll('.song-card').forEach(card => {
+        const text = card.textContent.toLowerCase();
+        card.style.display = text.includes(query) ? '' : 'none';
+    });
+    // Artist cards
+    document.querySelectorAll('.artist-card').forEach(card => {
+        const text = card.textContent.toLowerCase();
+        card.style.display = text.includes(query) ? '' : 'none';
+    });
+});
+
+// Show My Listening Stats if logged in and update stats
+fetch('/api/stats/my/')
+    .then(res => res.json())
+    .then(data => {
+        if (!data.error) {
+            document.getElementById('myStatsCard').style.display = '';
+            // Update stats fields
+            document.getElementById('stat-username').textContent = data.username;
+            document.getElementById('stat-listening-time').textContent = data.total_listening_time;
+            document.getElementById('stat-sessions').textContent = data.total_sessions;
+            window.lastActiveTimestamp = new Date(data.last_active);
+            updateLastActiveDisplay();
+        }
+    });
+
+function updateLastActiveDisplay() {
+    if (!window.lastActiveTimestamp) return;
+    const now = new Date();
+    const diff = Math.floor((now - window.lastActiveTimestamp) / 1000);
+    let display;
+    if (diff < 60) display = `${diff} seconds ago`;
+    else if (diff < 3600) display = `${Math.floor(diff/60)} minutes ago`;
+    else if (diff < 86400) display = `${Math.floor(diff/3600)} hours ago`;
+    else display = window.lastActiveTimestamp.toLocaleString();
+    document.getElementById('stat-last-active').textContent = display;
+}
+setInterval(updateLastActiveDisplay, 1000);
+
+document.querySelectorAll('.play-song').forEach(btn => {
+    btn.addEventListener('click', function() {
+        // Get all songs in the current section
+        const songSection = this.closest('.popular-songs-row');
+        const songs = Array.from(songSection.querySelectorAll('.song-card')).map(card => {
+            const playBtn = card.querySelector('.play-song');
+            return {
+                id: playBtn.dataset.songId,
+                audio_url: playBtn.dataset.audioUrl,
+                title: playBtn.dataset.title,
+                artist: playBtn.dataset.artist,
+                cover_url: playBtn.dataset.cover
+            };
+        });
+        
+        // Set the current playlist
+        window.setCurrentPlaylist(songs);
+        
+        // Play the selected song
+        window.playInPlayerBar(
+            this.dataset.songId,
+            this.dataset.audioUrl,
+            this.dataset.title,
+            this.dataset.artist,
+            this.dataset.cover
+        );
+    });
+});
+</script>
+{% endblock %} 

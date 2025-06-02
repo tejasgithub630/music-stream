@@ -1,0 +1,9 @@
+{% extends 'music/base.html' %}
+{% block title %}Login Required{% endblock %}
+{% block content %}
+<div class="card" style="max-width: 500px; margin: 60px auto; text-align: center;">
+    <h2 style="color: #4a90e2; margin-bottom: 18px;">Login Required</h2>
+    <p style="font-size: 1.15rem; color: #fff; margin-bottom: 24px;">You need to be logged in to view this page.</p>
+    <a href="{% url 'login' %}" class="btn" style="background: #4a90e2; color: #fff; font-size: 1.1rem; padding: 12px 32px;">Login</a>
+</div>
+{% endblock %} 

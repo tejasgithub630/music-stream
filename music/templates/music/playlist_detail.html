@@ -1,0 +1,93 @@
+{% extends 'music/base.html' %}
+
+{% block title %}{{ playlist.name }}{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div style="display: flex; gap: 24px; margin-bottom: 24px;">
+        {% if playlist.cover_image %}
+            <img src="{{ playlist.cover_image.url }}" alt="{{ playlist.name }}" style="width: 200px; height: 200px; border-radius: 12px; object-fit: cover;">
+        {% else %}
+            <img src="https://via.placeholder.com/200x200?text=♪" alt="{{ playlist.name }}" style="width: 200px; height: 200px; border-radius: 12px; object-fit: cover;">
+        {% endif %}
+        <div style="flex: 1;">
+            <h1 style="margin: 0 0 16px 0;">{{ playlist.name }}</h1>
+            <p style="color: #b3b3b3; margin-bottom: 16px;">{{ playlist.description }}</p>
+            <div style="color: #b3b3b3;">
+                <div>Created by {{ playlist.user.username }}</div>
+                <div>{{ playlist.songs.count }} songs</div>
+                <div>Created {{ playlist.created_at|date:"M d, Y" }}</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="songs-list">
+        <h3 style="margin-bottom: 16px;">Songs</h3>
+        {% for song in songs %}
+        <div class="song-item" style="display: flex; align-items: center; padding: 12px; background: #16213e; border-radius: 8px; margin-bottom: 8px;">
+            {% if song.cover_image %}
+                <img src="{{ song.cover_image.url }}" alt="{{ song.title }}" style="width: 48px; height: 48px; border-radius: 4px; margin-right: 16px;">
+            {% else %}
+                <img src="https://via.placeholder.com/48x48?text=♪" alt="{{ song.title }}" style="width: 48px; height: 48px; border-radius: 4px; margin-right: 16px;">
+            {% endif %}
+            <div style="flex: 1;">
+                <div style="font-weight: bold; color: #fff;">{{ song.title }}</div>
+                <div style="color: #b3b3b3; font-size: 0.9em;">{{ song.artist }}</div>
+            </div>
+            <button class="btn play-song" style="margin-right: 8px; background: #4a90e2;" data-song-id="{{ song.id }}" data-audio-url="{{ song.audio_file.url }}" data-title="{{ song.title }}" data-artist="{{ song.artist }}" data-cover="{% if song.cover_image %}{{ song.cover_image.url }}{% endif %}">Play</button>
+            <button class="btn remove-song" style="background: #dc3545;" data-playlist-id="{{ playlist.id }}" data-song-id="{{ song.id }}">Remove</button>
+        </div>
+        {% empty %}
+        <p style="color: #b3b3b3; text-align: center; padding: 24px;">No songs in this playlist yet.</p>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Set up playlist data
+const playlistSongs = JSON.parse('{{ songs_json|safe }}');
+
+// Set the current playlist when page loads
+window.setCurrentPlaylist(playlistSongs);
+
+document.querySelectorAll('.play-song').forEach(btn => {
+    btn.addEventListener('click', function() {
+        window.playInPlayerBar(
+            this.dataset.songId,
+            this.dataset.audioUrl,
+            this.dataset.title,
+            this.dataset.artist,
+            this.dataset.cover
+        );
+    });
+});
+
+document.querySelectorAll('.remove-song').forEach(btn => {
+    btn.addEventListener('click', function() {
+        const playlistId = this.dataset.playlistId;
+        const songId = this.dataset.songId;
+        
+        fetch(`/playlists/${playlistId}/remove/${songId}/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                this.closest('.song-item').remove();
+                // Update the playlist data after removing a song
+                const songIndex = playlistSongs.findIndex(song => song.id === songId);
+                if (songIndex !== -1) {
+                    playlistSongs.splice(songIndex, 1);
+                    window.setCurrentPlaylist(playlistSongs);
+                }
+            }
+        });
+    });
+});
+</script>
+{% endblock %} 

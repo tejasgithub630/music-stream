@@ -1,0 +1,35 @@
+{% extends 'music/base.html' %}
+
+{% block title %}My Playlists{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+        <h2>My Playlists</h2>
+        <a href="{% url 'create_playlist' %}" class="btn" style="background: #4a90e2;">Create New Playlist</a>
+    </div>
+    
+    <div class="playlists-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 24px;">
+        {% for playlist in playlists %}
+        <div class="playlist-card" style="background: #b3e0ff; border-radius: 10px; padding: 16px; display: flex; flex-direction: column; align-items: center; box-shadow: 0 2px 8px rgba(0,0,0,0.2);">
+            {% if playlist.cover_image %}
+                <img src="{{ playlist.cover_image.url }}" alt="{{ playlist.name }}" style="width: 120px; height: 120px; border-radius: 8px; object-fit: cover; margin-bottom: 10px;">
+            {% else %}
+                <img src="https://via.placeholder.com/120x120?text=♪" alt="{{ playlist.name }}" style="width: 120px; height: 120px; border-radius: 8px; object-fit: cover; margin-bottom: 10px;">
+            {% endif %}
+            <div style="text-align: center;">
+                <div style="font-weight: bold; color: #fff; margin-bottom: 8px;">{{ playlist.name }}</div>
+                <div style="color: #b3b3b3; font-size: 0.9em;">{{ playlist.songs.count }} songs</div>
+                <div style="color: #b3b3b3; font-size: 0.8em; margin-top: 4px;">Created {{ playlist.created_at|date:"M d, Y" }}</div>
+            </div>
+            <a href="{% url 'playlist_detail' playlist.id %}" class="btn" style="margin-top: 16px; width: 100%; background: #4a90e2;">View Playlist</a>
+        </div>
+        {% empty %}
+        <div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: #b3b3b3;">
+            <p>You haven't created any playlists yet.</p>
+            <a href="{% url 'create_playlist' %}" class="btn" style="background: #4a90e2; margin-top: 16px;">Create Your First Playlist</a>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %} 

@@ -1,0 +1,72 @@
+{% extends 'music/base.html' %}
+{% block title %}Sign Up{% endblock %}
+{% block content %}
+<div id="signup-bg-container" style="position: fixed; inset: 0; z-index: 0;">
+  <canvas id="signup-bg-canvas" style="width:100vw; height:100vh; display:block;"></canvas>
+</div>
+<div style="display: flex; justify-content: center; align-items: center; min-height: 70vh; position: relative; z-index: 1;">
+  <div style="background: #181818; border-radius: 12px; box-shadow: 0 2px 16px rgba(0,0,0,0.3); padding: 40px 32px; min-width: 340px; max-width: 400px; width: 100%;">
+    <h2 style="color: #03a9f4; margin-bottom: 24px;">Sign Up</h2>
+    <form method="post" autocomplete="off">
+      {% csrf_token %}
+      {{ form.non_field_errors }}
+      <div style="margin-bottom: 18px;">
+        <label style="color: #b3b3b3;">Username</label>
+        {{ form.username }}
+      </div>
+      <div style="margin-bottom: 18px;">
+        <label style="color: #b3b3b3;">Password</label>
+        {{ form.password1 }}
+      </div>
+      <div style="margin-bottom: 18px;">
+        <label style="color: #b3b3b3;">Confirm Password</label>
+        {{ form.password2 }}
+      </div>
+      <button type="submit" class="btn" style="width: 100%; background: #03a9f4; color: #fff; font-weight: bold;">Sign Up</button>
+      <div style="margin-top: 18px; text-align: center;">
+        <span style="color: #b3b3b3;">Already have an account?</span>
+        <a href="{% url 'login' %}" style="color: #03a9f4; text-decoration: underline;">Log In</a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Animated lines background for signup
+const canvas = document.getElementById('signup-bg-canvas');
+const ctx = canvas.getContext('2d');
+function resizeCanvas() {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+}
+resizeCanvas();
+window.addEventListener('resize', resizeCanvas);
+const lines = Array.from({length: 18}, () => ({
+  x: Math.random() * canvas.width,
+  y: Math.random() * canvas.height,
+  dx: (Math.random() - 0.5) * 1.2,
+  dy: (Math.random() - 0.5) * 1.2
+}));
+function animate() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.strokeStyle = '#03a9f4';
+  ctx.globalAlpha = 0.18;
+  ctx.lineWidth = 2;
+  lines.forEach(line => {
+    ctx.beginPath();
+    ctx.moveTo(line.x, line.y);
+    ctx.lineTo(line.x + line.dx * 40, line.y + line.dy * 40);
+    ctx.stroke();
+    line.x += line.dx;
+    line.y += line.dy;
+    if (line.x < 0 || line.x > canvas.width) line.dx *= -1;
+    if (line.y < 0 || line.y > canvas.height) line.dy *= -1;
+  });
+  ctx.globalAlpha = 1;
+  requestAnimationFrame(animate);
+}
+animate();
+</script>
+{% endblock %} 
